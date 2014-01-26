@@ -1,0 +1,15 @@
+#include "mainwindow.h"
+#include <QApplication>
+#include "client.h"
+#include "server.h"
+#include "ui_mainwindow.h"
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    MainWindow w;
+    Server s(0,&w);
+    s.listen();
+    w.show();
+    return a.exec();
+}
