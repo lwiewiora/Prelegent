@@ -5,10 +5,17 @@ import "pages"
 
 ApplicationWindow
 {
+         id:app
+
     initialPage: Page {
 
         //ID i nazwa obiektu FirstPage
         id: pol
+        property string formatedTime : "100";
+        property bool timerWork: false;
+        property int minutes: 0;
+        property int seconds: 0;
+
         objectName:  "pol3"
         //Sygnały zdefiniowane w celu obłsugi przycisków
         signal qmlSignal(string msg)                //sygnał wykorzystwany przy wysłaniu wiadomosci.
@@ -16,10 +23,19 @@ ApplicationWindow
         signal qmlSignalTimerChange(string msg)     //sygnał wykorzystywany przy zmianie czasu zegara.
 
 
+
      SilicaFlickable {
 
         objectName: "flick"
         anchors.fill: parent
+
+        PullDownMenu {
+            MenuItem {
+                text: "Ustaw czas"
+                onClicked: pageStack.push(pag)
+            }
+        }
+
 
         //Przycisk umozliwiajcy wyslanie wiadomosci na serwer.
         Button
@@ -65,7 +81,7 @@ ApplicationWindow
             enabled: false
         }
 
-        //Przycisk odpowiedzialny za start aplikacji.
+        //Przycisk odpowiedzialny za start zegara.
         Button
         {
             id:startClock
@@ -74,26 +90,45 @@ ApplicationWindow
             scale:1.5
             x : 110
             y : 800
-            text : LabelClock.btnName
+            text : "Rozpocznij prezentację" //LabelClock.btnName
 
             MouseArea {
+
                 anchors.fill: parent
-                onClicked: pol.qmlSignalStartClock()
+                onClicked: {
+                    pol.timerWork = !pol.timerWork;
+                    //pol.qmlSignalStartClock()
+                    if(pol.timerWork == true)
+                    {
+                        mainTimer.start();
+                        parent.text =  "Zakończ prezentację"
+                    }
+                    else
+                        parent.text = "Rozpocznij prezentację"
+                }
             }
 
         }
 
         //Etykiety interfejsu
+
+        Rectangle
+        {
+            width:parent.width;
+            height:30
+            x:0
+            y:40
+            color:"transparent"
         Label
         {
             id:clock
             objectName: "clock"
             scale : 2.0
-            x: 200
-            y: 20
-            text: LabelClock.time
+            anchors.centerIn: parent
+            text: pol.formatedTime // LabelClock.time
             color : "lightgreen"
 
+        }
         }
 
         Label
@@ -155,7 +190,7 @@ ApplicationWindow
             scale :2.0
         }
 
-
+/*
         //Przycisk zmniejszania ustawionego czasu
         IconButton {
 
@@ -180,9 +215,171 @@ ApplicationWindow
                 pol.qmlSignalTimerChange("TimeUp")
             }
         }
+*/
 
+        Item {
+
+            scale : 2.0
+            x: 200
+            y: 20
+
+            Timer {
+                id:mainTimer
+                interval: 1000; repeat: true
+                onTriggered:
+                {
+                    if(pol.timerWork == true)
+                    {
+                        pol.seconds = pol.seconds - 1;
+                        if(pol.seconds <0)
+                        {
+                            pol.minutes = pol.minutes -1;
+                            pol.seconds = 59;
+                        }
+                        if(pol.minutes<0)
+                        {
+                            pol.seconds =0;
+                            pol.minutes = 0;
+                            //time.text = pol.minutes.toString() +":"+pol.seconds.toString();
+
+
+                            startClock.text = "Rozpocznij prezentację"
+                            pol.timerWork = false;
+                            mainTimer.stop();
+                        }
+                        pol.formatedTime = pol.minutes.toString() + " min. "+pol.seconds.toString()+" sek.";
+
+
+                    }
+                }
+            }
+
+            Text { id: time }
+        }
     }
   }
+
+   TimeSet{
+
+        id: pag
+        objectName: "SetTimePage"
+        signal qmlSignal(string msg)                //sygnał wykorzystwany przy wysłaniu wiadomosci.
+
+        Rectangle
+        {
+            width:parent.width;
+            height:30
+            x:0
+            y:140
+            color:"transparent"
+            Label
+            {
+                id:clockSet
+                objectName: "clockSet"
+                anchors.centerIn: parent
+                scale : 2.0
+                y: 20
+                text: pol.formatedTime
+                color : "lightgreen"
+            }
+        }
+
+        Rectangle
+        {
+            width:parent.width;
+            height:30
+            x:0
+            y:200
+            color:"transparent"
+            Label
+            {
+                scale:1.5
+                anchors.centerIn: parent
+                color : "lightblue"
+                text: "Ustaw czas prezentacji"
+            }
+        }
+        TimePicker {
+
+            id:timeSet
+            hour: 0
+            minute: 0
+            x:60
+            y:300
+
+            property int lastValue: 0;
+            property int roznica: 0;
+            property int curValue: 0
+            property int round: 0
+            onTimeChanged:
+            {
+               // pol.minutes = timeSet.hour * 2.5;
+                pol.seconds = timeSet.minute;
+                pol.formatedTime = pol.minutes.toString() + " min. "+pol.seconds.toString()+" sek.";
+
+            }
+
+
+
+
+        onHourChanged:
+        {
+
+            curValue = timeSet.hour;
+            if(lastValue %23==0)
+                curValue =curValue+23;
+
+            if(lastValue <  timeSet.hour)
+                    pol.minutes = pol.minutes + 1;
+                else
+                    pol.minutes = pol.minutes - 1
+
+            if(pol.minutes <0)
+            {
+                pol.minutes = 59;
+                hour =59;
+                lastValue =59;
+                curValue = 59;
+            }
+            if(pol.minutes >=59 ||pol.minutes ==0)
+            {
+                pol.minutes = 0;
+                hour =0;
+                lastValue =0;
+                curValue = 0;
+            }
+
+
+            lastValue = timeSet.hour;
+
+         }
+
+    }
+        /*
+        Button
+        {
+            id: saveTime
+
+            objectName: "saveTime"
+            scale:1.5
+            x : 110
+            y : 800
+            text :"Zapisz"
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked:{
+                    pol.minutes = timeSet.hour*2.5;
+                    pol.seconds = timeSet.minute;
+                    pol.formatedTime = pol.minutes.toString() + ":"+pol.seconds.toString();
+
+                }
+            }
+
+        }*/
+    }
+
+
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
 }
 
