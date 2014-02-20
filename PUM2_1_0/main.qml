@@ -238,10 +238,8 @@ ApplicationWindow
                         }
                         if(pol.minutes<0)
                         {
-                            pol.seconds =0;
+                            pol.seconds = 0;
                             pol.minutes = 0;
-                            //time.text = pol.minutes.toString() +":"+pol.seconds.toString();
-
 
                             startClock.text = "Rozpocznij prezentację"
                             pol.timerWork = false;
@@ -313,71 +311,17 @@ ApplicationWindow
             property int round: 0
             onTimeChanged:
             {
-               // pol.minutes = timeSet.hour * 2.5;
+                pol.minutes = timeSet.hour;
                 pol.seconds = timeSet.minute;
-                pol.formatedTime = pol.minutes.toString() + " min. "+pol.seconds.toString()+" sek.";
+                pol.formatedTime =  pol.minutes.toString() + " min. "+pol.seconds.toString()+" sek.";
 
             }
-
-
-
-
-        onHourChanged:
-        {
-
-            curValue = timeSet.hour;
-            if(lastValue %23==0)
-                curValue =curValue+23;
-
-            if(lastValue <  timeSet.hour)
-                    pol.minutes = pol.minutes + 1;
-                else
-                    pol.minutes = pol.minutes - 1
-
-            if(pol.minutes <0)
-            {
-                pol.minutes = 59;
-                hour =59;
-                lastValue =59;
-                curValue = 59;
-            }
-            if(pol.minutes >=59 ||pol.minutes ==0)
-            {
-                pol.minutes = 0;
-                hour =0;
-                lastValue =0;
-                curValue = 0;
-            }
-
-
-            lastValue = timeSet.hour;
-
-         }
 
     }
-        /*
-        Button
-        {
-            id: saveTime
 
-            objectName: "saveTime"
-            scale:1.5
-            x : 110
-            y : 800
-            text :"Zapisz"
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked:{
-                    pol.minutes = timeSet.hour*2.5;
-                    pol.seconds = timeSet.minute;
-                    pol.formatedTime = pol.minutes.toString() + ":"+pol.seconds.toString();
 
-                }
-            }
-
-        }*/
-    }
+  }
 
 
     cover: Qt.resolvedUrl("cover/CoverPage.qml")
