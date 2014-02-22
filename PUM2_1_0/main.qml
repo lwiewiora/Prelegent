@@ -209,7 +209,7 @@ ApplicationWindow
 
             id: increaseTime;
             x: 380; y: 10;
-            scale :0.5 
+            scale :0.5
             icon.source:  "image://theme/icon-cover-next";
             onClicked: {
                 pol.qmlSignalTimerChange("TimeUp")
@@ -320,6 +320,33 @@ ApplicationWindow
     }
 
 
+        Rectangle
+        {
+            width:parent.width;
+            height:30
+            x:0
+            y:800
+            color:"transparent"
+            Button
+            {
+                id: acceptTime
+
+                objectName: "acceptTime"
+                scale:1.5
+                text : "Ustaw czas"
+                anchors.centerIn: parent
+
+                MouseArea
+                {
+                    anchors.fill: parent
+                    onClicked: {
+                        pageStack.pop();
+
+                    }
+                }
+
+            }
+        }
 
   }
 
