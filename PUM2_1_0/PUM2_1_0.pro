@@ -35,8 +35,7 @@ include(sailfishapplication/sailfishapplication.pri)
 
 OTHER_FILES = \
     rpm/PUM2_1_0.yaml \
-    rpm/PUM2_1_0.spec \
-    TimeSet.qml
+    rpm/PUM2_1_0.spec
 
 RESOURCES +=
 

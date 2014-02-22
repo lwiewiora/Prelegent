@@ -257,7 +257,7 @@ ApplicationWindow
     }
   }
 
-   TimeSet{
+   Page{
 
         id: pag
         objectName: "SetTimePage"
